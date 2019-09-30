@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>图片外链工具</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui@2.12.0/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+  <el-upload
+    class="upload-demo"
+    :action="uploadUrl"
+    :on-preview="handlePreview"
+    :on-change="handleChange"
+    :before-upload="beforeUpload"
+    :on-success="handleSuccess"
+    multiple
+    :limit="3"
+    :on-exceed="handleExceed"
+    :data="data"
+    name="Filedata"
+    :file-list="fileList">
+    <el-button size="small" type="primary">点击上传</el-button>
+    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+  </el-upload>
+  <div v-if="imgUrl">
+    <p>图片地址</p>
+    <el-input
+      type="textarea"
+      :rows="2"
+      readonly
+      v-model="imgUrl">
+  </div>
+</div>
+<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+<script src="https://unpkg.com/element-ui@2.12.0/lib/index.js"></script>
+<script>
+  const UPLOAD_URL = 'https://api.uomg.com/api/image.ali';
+  new Vue({
+    el: '#app',
+    data: {
+      visible: false,
+      uploadUrl: UPLOAD_URL,
+      fileList: [],
+      headers: {
+        // cache: false,
+        // contentType: false,
+        // processData: false,
+        // dataType: 'json',
+      },
+      data: {
+        file: 'multipart'
+      },
+      imgUrl: ''
+    },
+    methods: {
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeUpload(file) {
+        return true;
+      },
+      handleSuccess(res, file, filelist) {
+        const { code, imgurl } = res;
+        if (code === 1) {
+          this.imgUrl = imgurl;
+        }
+      },
+      handleChange(file) {
+        console.log('filechange', file);
+      }
+    }
+  });
+</script>
+</body>
+</html>
